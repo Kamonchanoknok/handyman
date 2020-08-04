@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hdman/config/index.dart';
-import 'package:hdman/provider/model/market.dart';
 import 'package:hdman/provider/model/user.dart';
 import 'package:hdman/widget/TextFix.dart';
 import 'package:provider/provider.dart';

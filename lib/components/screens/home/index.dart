@@ -1,18 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hdman/components/screens/bill/index.dart';
 import 'package:hdman/components/screens/explore/index.dart';
+import 'package:hdman/components/screens/favorite/index.dart';
 import 'package:hdman/components/screens/notification/index.dart';
+import 'package:hdman/components/screens/order/index.dart';
 import 'package:hdman/components/screens/profile/index.dart';
 import 'package:hdman/components/screens/stores/index.dart';
-import 'package:hdman/config/index.dart';
 import 'package:hdman/provider/model/market.dart';
-import 'package:hdman/provider/model/user.dart';
 import 'package:hdman/widget/TextFix.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -23,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  static int _countProduct = 0;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -33,13 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
   static List<Widget> _widgetUser = <Widget>[
     ExploreScreen(),
     BillScreen(),
-    NotificationScreen(),
+    FavoriteScreen(),
     ProfileScreen()
   ];
 
   static List<Widget> _widgetMarket = <Widget>[
     StoresScreen(),
-    BillScreen(),
+    OrderScreen(),
     NotificationScreen(),
     ProfileScreen()
   ];
@@ -52,15 +50,26 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.receipt),
+      icon: _countProduct > 0
+          ? Stack(children: <Widget>[
+              Icon(Icons.receipt),
+              Positioned(
+                // draw a red marble
+                top: 0.0,
+                right: 0.0,
+                child: Icon(Icons.brightness_1,
+                    size: 10.0, color: Colors.redAccent),
+              )
+            ])
+          : Icon(Icons.receipt),
       title: TextFix(
         title: 'รายการ',
       ),
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.inbox),
+      icon: Icon(Icons.favorite),
       title: TextFix(
-        title: 'กล่องข้อความ',
+        title: 'รายการโปรด',
       ),
     ),
     BottomNavigationBarItem(
@@ -101,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final marketProvider = Provider.of<MarketProvider>(context, listen: false);
+
     return Scaffold(
       body: Container(
         child: Center(
@@ -115,7 +125,9 @@ class _HomeScreenState extends State<HomeScreen> {
         items: marketProvider.color ? BottomMarket : BottomUser,
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
+        onTap: (index) {
+          _onItemTapped(index);
+        },
       ),
     );
   }

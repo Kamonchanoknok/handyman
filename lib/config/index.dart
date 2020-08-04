@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 //final api = "http://192.168.1.158:8080/Production/Api/hdman_api/public/api";
-final api = "http://www.servicestdot.com/api/hdman_api/public/api";
+final api = "http://servicetdots.com/api/hdman_api/public/api";
 final getFontFamily = "MitrRegular";
 
 final sizeFontHeader = 18.0;

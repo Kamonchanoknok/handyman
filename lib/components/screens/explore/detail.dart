@@ -1,69 +1,44 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hdman/components/screens/explore/detail.dart';
+import 'package:hdman/components/screens/explore/confirm.dart';
+import 'package:hdman/components/screens/explore/index.dart';
+import 'package:hdman/components/screens/home/index.dart';
 import 'package:hdman/config/index.dart';
 import 'package:hdman/function/alert.dart';
-import 'package:hdman/provider/model/checked.dart';
 import 'package:hdman/provider/model/user.dart';
 import 'package:hdman/widget/TextFix.dart';
 import 'package:provider/provider.dart';
 
-class ExploreScreen extends StatefulWidget {
-  ExploreScreen({Key key}) : super(key: key);
+class DetailStoreScreen extends StatefulWidget {
+  final String nameStroe;
+  final int idStore;
+
+  DetailStoreScreen({Key key, this.idStore, this.nameStroe}) : super(key: key);
 
   @override
-  _ExploreScreenState createState() => _ExploreScreenState();
+  _DetailStoreScreenState createState() => _DetailStoreScreenState();
 }
 
-class _ExploreScreenState extends State<ExploreScreen> {
-  List Stores = []; //ร้านค้า
-  bool loadingChecked = true;
-  List productChecked = [];
+class _DetailStoreScreenState extends State<DetailStoreScreen> {
+  List ProductList = [];
+  bool loadingCkecked = true;
 
   didChangeDependencies() {
     super.didChangeDependencies();
-    actionMarket();
-    actionCheckedProduct();
+    actionProductList();
   }
 
-  Future<void> actionCheckedProduct() async {
-    // เรียกข้อมูลร้านที่เปิดทำการ
-
-    try {
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-      Dio dio = new Dio();
-      Response response =
-          await dio.get("${api}/history/doprocess/${userProvider.data['id']}");
-
-      // CheckedProvider checkedProvider =
-      //     Provider.of<CheckedProvider>(context, listen: false);
-
-      setState(() {
-        productChecked = response.data["data"];
-        //checkedProvider.setProduct(productChecked.length);
-      });
-
-      print(productChecked);
-    } catch (e) {
-      //เกิด error ระหว่างโหลด
-
-    }
-  }
-
-  Future<void> actionMarket() async {
+  Future<void> actionProductList() async {
     // เรียกข้อมูลร้านที่เปิดทำการ
 
     try {
       Dio dio = new Dio();
-      Response response = await dio.get("${api}/market");
+      Response response = await dio.get("${api}/product/${widget.idStore}");
 
       setState(() {
-        Stores = response.data["data"];
-        loadingChecked = false;
+        ProductList = response.data["data"];
+        loadingCkecked = false;
       });
-
-      //print(Stores.length);
     } catch (e) {
       //เกิด error ระหว่างโหลด
 
@@ -72,7 +47,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   Widget _buildListView() {
     return ListView.builder(
-      itemCount: Stores.length,
+      itemCount: ProductList.length,
       itemBuilder: (BuildContext context, int index) {
         return _buildCards(index);
       },
@@ -86,18 +61,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
         elevation: 3,
         child: GestureDetector(
           onTap: () {
-            if (productChecked.length > 0) {
-              getAlertWarning(context,
-                  "ไม่สามารถทำรายการได้ มีรายการที่กำลังดำเนินการอยู่ กรุณาดูที่เมนู `รายการ` ");
-              return;
-            }
-
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DetailStoreScreen(
-                  idStore: Stores[index]["id"],
-                  nameStroe: Stores[index]["name"],
+                builder: (context) => ExploreConfirmScreen(
+                  data: ProductList[index],
                 ),
               ),
             );
@@ -112,17 +80,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 backgroundColor: Colors.redAccent,
                 elevation: 0,
                 child: Icon(
-                  Icons.store,
+                  Icons.settings,
                   color: Colors.white,
+                  size: 20,
                 ),
                 onPressed: () {},
               ),
             ),
             title: TextFix(
-              title: Stores[index]["name"],
+              title: ProductList[index]["name"],
             ),
             subtitle: TextFix(
-              title: "ประเภทร้านค้า ${Stores[index]["category"]}",
+              title:
+                  "${ProductList[index]["price"]} ${ProductList[index]["service"]}",
             ),
           ),
         ),
@@ -131,14 +101,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
   }
 
   Widget _buildScrenns() {
-    if (loadingChecked) {
+    if (loadingCkecked) {
       return Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[CircularProgressIndicator()],
       ));
     } else {
-      if (Stores.length == 0) {
+      if (ProductList.length == 0) {
         return Center(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -161,12 +131,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //actionMarket();
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.favorite_border),
+            onPressed: () {
+              getAlertSuccess(context,
+                  "เพิ่มร้าน ${widget.nameStroe} เป็นรายการโปรด เรียบร้อย !");
+            },
+          )
+        ],
         title: TextFix(
-          title: 'สำรวจ',
-          sizefont: sizeFontHeader,
+          title: "${widget.nameStroe}",
         ),
       ),
       body: _buildScrenns(),

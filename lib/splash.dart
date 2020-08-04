@@ -32,17 +32,18 @@ class _SplashState extends State<Splash> {
     final colorTheme = prefs.getBool("market");
     final statusMarket = prefs.getBool("market_status");
 
-    MarketProvider marketProvider =   Provider.of<MarketProvider>(context, listen: false);
+    MarketProvider marketProvider =
+        Provider.of<MarketProvider>(context, listen: false);
 
-    if(colorTheme != null){
+    if (colorTheme != null) {
       marketProvider.setMarket(colorTheme);
-    }else{
+    } else {
       marketProvider.setMarket(false);
     }
 
-    if(statusMarket != null ){
+    if (statusMarket != null) {
       marketProvider.setStatus(statusMarket);
-    }else{
+    } else {
       marketProvider.setStatus(false);
     }
 
@@ -68,7 +69,7 @@ class _SplashState extends State<Splash> {
         seconds: 5,
         navigateAfterSeconds: login ? HomeScreen() : LoginScreen(),
         title: Text(
-          'Welcome In Hdman Application',
+          'Welcome In HandyMan Application',
           style: TextStyle(fontFamily: getFontFamily),
         ),
         image: Image.asset('lib/assets/images/NO_IMG.png'),

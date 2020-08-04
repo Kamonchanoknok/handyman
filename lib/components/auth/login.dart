@@ -27,8 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future actionLogin() async {
     try {
       if (username.text != "" && password.text != "") {
-        print('Success');
-
         Dio dio = new Dio();
         Response response = await dio.post("${api}/auth",
             data: {"username": username.text, "password": password.text});
@@ -198,9 +196,9 @@ class _LoginScreenState extends State<LoginScreen> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
-                Icons.email,
+                Icons.person,
               ),
-              hintText: 'กรุณากรอกอีเมลล์',
+              hintText: 'กรุณากรอกชื่อผู้ใช้งาน',
               hintStyle: TextStyle(fontFamily: getFontFamily),
             ),
           ),
@@ -315,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         TextFix(
-                          title: 'Hady Man',
+                          title: 'Handy Man',
                           sizefont: 40,
                         ),
                         SizedBox(
